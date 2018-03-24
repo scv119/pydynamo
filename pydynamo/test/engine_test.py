@@ -1,5 +1,5 @@
 import unittest
-from storage.engine import StorageEngine
+from pydynamo.storage.engine import StorageEngine
 
 
 class StorageEngineTest(unittest.TestCase):
