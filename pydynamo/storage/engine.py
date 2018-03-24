@@ -1,10 +1,13 @@
 from typing import Any
+from abc import ABC
+from abc import abstractmethod
 
 
-class StorageEngine(object):
-
+class StorageEngine(ABC):
+    @abstractmethod
     def create_store(self, store_name: str) -> Any:
-        raise Exception("not implemented")
+        pass
 
+    @abstractmethod
     def get_store(self, store_name: str) -> Any:
-        raise Exception("not implemented")
+        pass
