@@ -1,0 +1,8 @@
+#! /bin/bash
+
+cd "$(dirname "$0")"/..
+echo "Check type"
+mypy -p pydynamo
+
+echo "Check flake8"
+python3 -m pyflakes pydynamo

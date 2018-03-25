@@ -7,9 +7,10 @@ python:
 
 # command to install dependencies
 install:
-  - "./.travis/install.sh"
+  - "./tool/install"
 
 # command to run tests
 script:
 - pytest
 - mypy -p pydynamo
+- python -m pyflakes pydynamo

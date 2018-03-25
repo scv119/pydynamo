@@ -1,8 +1,4 @@
 import unittest
-import doctest
-import sys
-import os
-
 
 def all_tests_suite():
     suite_names = [
