@@ -4,6 +4,7 @@ from .store import Store
 from .error import StorageException
 from .error import ErrorType
 
+
 class InMemoryStore(Store):
     def __init__(self, store_name):
         self.store_name = store_name
