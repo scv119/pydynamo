@@ -4,6 +4,7 @@ from enum import Enum
 class ErrorType(Enum):
     NOT_FOUND = 0
     INVALID_INPUT = 1
+    NONE_POINTER = 2
 
 
 class StorageException(Exception):
@@ -11,5 +12,3 @@ class StorageException(Exception):
         self.error_type = error_type
         self.msg = msg
 
-class NotFoundError(StorageException):
-    pass

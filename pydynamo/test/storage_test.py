@@ -1,5 +1,5 @@
 import unittest
-from storage.inmemorystore import InMemoryStore
+from pydynamo.storage.inmemorystore import InMemoryStore
 
 test_cases = [["2", "abandon"], ["1", "definition"], ["3", "support"]]
 
@@ -80,7 +80,3 @@ class StoreTest(unittest.TestCase):
         iterator.next()
         self.assertEqual(iterator.value(), "support")
         self.assertEqual(iterator.key(), "3")
-
-
-if __name__ == '__main__':
-    unittest.main()

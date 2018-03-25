@@ -1,3 +1,4 @@
+import unittest
 from pydynamo.storage.inmemorystore import InMemoryStore
 from pydynamo.storage.inmemoryengine import InMemoryStorageEngine
 

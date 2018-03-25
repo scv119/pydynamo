@@ -1,4 +1,6 @@
 from .binarysearchtree import BinarySearchTree
+from .error import StorageException
+from .error import ErrorType
 
 
 class Iterator(object):
@@ -11,9 +13,8 @@ class Iterator(object):
         if self.database.contain(key):
             self.cur = self.database.get_node(key)
         else:
-            raise Exception
-            print("This key does not exist in this database. Iterator back to the beginning.")
             self.seek_to_first()
+            raise StorageException(ErrorType.NOT_FOUND, "This key cannot be found in store.")
 
     def seek_to_first(self) -> None:
         self.cur = None
@@ -21,10 +22,10 @@ class Iterator(object):
 
     def valid(self) -> bool:
         if self.cur is None and self.start:
-            return 1
+            return True
         elif self.database.find_next(self.cur):
-            return 1
-        return 0
+            return True
+        return False
 
     def next(self) -> None:
         if not self.cur and self.start:
@@ -34,7 +35,13 @@ class Iterator(object):
         self.start = False
 
     def value(self) -> str:
-        return self.cur.value
+        if self.cur:
+            return self.cur.value
+        else:
+            raise StorageException(ErrorType.NONE_POINTER, "This object is None and it has no attribute value.")
 
     def key(self) -> str:
-        return self.cur.key
+        if self.cur:
+            return self.cur.key
+        else:
+            raise StorageException(ErrorType.NONE_POINTER, "This object is None and it has no attribute key.")
