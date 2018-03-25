@@ -5,4 +5,4 @@ echo "Check type"
 mypy -p pydynamo
 
 echo "Check flake8"
-python3 -m pyflakes pydynamo
+python3 -m flake8 pydynamo

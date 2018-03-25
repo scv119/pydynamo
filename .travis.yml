@@ -13,4 +13,4 @@ install:
 script:
 - pytest
 - mypy -p pydynamo
-- python -m pyflakes pydynamo
+- python -m flake8 pydynamo
