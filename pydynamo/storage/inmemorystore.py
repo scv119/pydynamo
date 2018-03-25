@@ -18,15 +18,15 @@ class InMemoryStore(Store):
 
     def get(self, key: str) -> str:
         if not self.database.contain(key):
-            raise StorageException(ErrorType.NOT_FOUND, "This key cannot be found in store.")
-            return None
-        else:
-            return self.database.get(key)
+            raise StorageException(ErrorType.NOT_FOUND,
+                                   "This key cannot be found in store.")
+        return self.database.get(key)
 
     def iterator(self) -> Iterator:
         return Iterator(self.database)
 
     def remove(self, key: str) -> None:
         if not self.database.contain(key):
-            raise StorageException(ErrorType.NOT_FOUND, "This key cannot be found in store.")
+            raise StorageException(ErrorType.NOT_FOUND,
+                                   "This key cannot be found in store.")
         self.database.remove_node(key)

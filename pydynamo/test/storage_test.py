@@ -1,5 +1,6 @@
 import unittest
 from pydynamo.storage.inmemorystore import InMemoryStore
+from pydynamo.storage.error import StorageException
 
 test_cases = [["2", "abandon"], ["1", "definition"], ["3", "support"]]
 
@@ -22,7 +23,8 @@ class StoreTest(unittest.TestCase):
 
     def test_get(self) -> None:
         store = self._generate_store(test_cases)
-        self.assertEqual(store.get("4"), None)
+        with self.assertRaises(StorageException):
+            store.get("4")
 
     def _generate_store(self, list)-> InMemoryStore:
         store = InMemoryStore("test")
@@ -64,15 +66,23 @@ class StoreTest(unittest.TestCase):
         self.assertEqual(iterator.value(), "abandon")
         self.assertEqual(iterator.key(), "2")
         iterator.seek_to_first()
-        self.assertTrue(iterator.start == True)
+        self.assertTrue(iterator.start is True)
         iterator.next()
         self.assertEqual(iterator.value(), "definition")
         self.assertEqual(iterator.key(), "1")
 
+    def test_iterator_seek(self):
+        store = self._generate_store(test_cases)
+        iterator = store.iterator()
+        iterator.seek("1")
+        self.assertEqual(iterator.value(), "definition")
+        with self.assertRaises(StorageException):
+            iterator.seek("4")
+
     def test_remove(self):
         store = self._generate_store(test_cases)
         store.remove("2")
-        self.assertEqual(store.get("2"), None)
+        self.assertRaises(StorageException, store.get, "2")
         iterator = store.iterator()
         iterator.next()
         self.assertEqual(iterator.value(), "definition")

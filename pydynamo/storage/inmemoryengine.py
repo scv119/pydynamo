@@ -1,5 +1,7 @@
 from .engine import StorageEngine
 from .inmemorystore import InMemoryStore
+from .error import StorageException
+from .error import ErrorType
 
 
 class InMemoryStorageEngine(StorageEngine):
@@ -14,5 +16,5 @@ class InMemoryStorageEngine(StorageEngine):
         if store_name in self.stores:
             return self.stores[store_name]
         else:
-            raise Exception
-            return None
+            raise StorageException(ErrorType.NOT_FOUND,
+                                   "This store cannot be found.")

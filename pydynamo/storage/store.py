@@ -17,5 +17,5 @@ class Store(ABC):
         pass
 
     @abstractmethod
-    def remove(self, key:str) -> Any:
+    def remove(self, key: str) -> Any:
         pass

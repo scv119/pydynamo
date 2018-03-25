@@ -22,7 +22,7 @@ class BinarySearchTree(object):
             cur_node.right = self._insert_at(key, value, cur_node.right)
         return cur_node
 
-    def contain(self, key:str) -> bool:
+    def contain(self, key: str) -> bool:
         cur = self.root
         while cur:
             if cur.key == key:
@@ -33,7 +33,7 @@ class BinarySearchTree(object):
                 cur = cur.left
         return False
 
-    def get(self, key:str) -> str:
+    def get(self, key: str) -> str:
         cur = self.root
         while cur:
             if cur.key == key:
@@ -44,7 +44,7 @@ class BinarySearchTree(object):
                 cur = cur.left
         return None
 
-    def get_node(self, key: str) -> str:
+    def get_node(self, key: str) -> TreeNode:
         cur = self.root
         while cur:
             if cur.key == key:
@@ -55,7 +55,7 @@ class BinarySearchTree(object):
                 cur = cur.left
         return None
 
-    def update(self, key:str, value: str) -> None:
+    def update(self, key: str, value: str) -> None:
         cur = self.root
         while cur:
             if cur.key == key:
@@ -67,13 +67,14 @@ class BinarySearchTree(object):
                 cur = cur.left
 
     def balance_tree(self) -> None:
+        # TODO
         pass
 
     def remove_node(self, key: str) -> None:
         if self.contain(key):
             self.root = self._remove_node_at(key, self.root)
 
-    def _remove_node_at(self, key:str, root: TreeNode) -> TreeNode:
+    def _remove_node_at(self, key: str, root: TreeNode) -> TreeNode:
         if root.key == key:
             self.size -= 1
             if root.right is None:

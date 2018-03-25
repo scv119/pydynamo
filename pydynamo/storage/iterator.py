@@ -1,12 +1,14 @@
 from .binarysearchtree import BinarySearchTree
 from .error import StorageException
 from .error import ErrorType
+from typing import Union
+from .treenode import TreeNode
 
 
 class Iterator(object):
-    def __init__(self, database: BinarySearchTree):
+    def __init__(self, database: BinarySearchTree) -> None:
         self.database = database
-        self.cur = None
+        self.cur: Union[None, TreeNode] = None
         self.start = True
 
     def seek(self, key: str) -> None:
@@ -14,7 +16,8 @@ class Iterator(object):
             self.cur = self.database.get_node(key)
         else:
             self.seek_to_first()
-            raise StorageException(ErrorType.NOT_FOUND, "This key cannot be found in store.")
+            raise StorageException(ErrorType.NOT_FOUND,
+                                   "This key cannot be found in store.")
 
     def seek_to_first(self) -> None:
         self.cur = None
@@ -28,7 +31,7 @@ class Iterator(object):
         return False
 
     def next(self) -> None:
-        if not self.cur and self.start:
+        if self.cur is None and self.start:
             self.cur = self.database.find_min()
         else:
             self.cur = self.database.find_next(self.cur)
@@ -38,10 +41,14 @@ class Iterator(object):
         if self.cur:
             return self.cur.value
         else:
-            raise StorageException(ErrorType.NONE_POINTER, "This object is None and it has no attribute value.")
+            raise StorageException(ErrorType.NONE_POINTER,
+                                   "This object is None and "
+                                   "it has no attribute value.")
 
     def key(self) -> str:
         if self.cur:
             return self.cur.key
         else:
-            raise StorageException(ErrorType.NONE_POINTER, "This object is None and it has no attribute key.")
+            raise StorageException(ErrorType.NONE_POINTER,
+                                   "This object is None and "
+                                   "it has no attribute key.")
