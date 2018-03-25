@@ -1,54 +1,53 @@
-from .binarysearchtree import BinarySearchTree
-from .error import StorageException
-from .error import ErrorType
-from typing import Union
-from .treenode import TreeNode
+from abc import ABC
+from abc import abstractmethod
 
 
-class Iterator(object):
-    def __init__(self, database: BinarySearchTree) -> None:
-        self.database = database
-        self.cur: Union[None, TreeNode] = None
-        self.start = True
-
+class Iterator(ABC):
+    @abstractmethod
     def seek(self, key: str) -> None:
-        if self.database.contain(key):
-            self.cur = self.database.get_node(key)
-        else:
-            self.seek_to_first()
-            raise StorageException(ErrorType.NOT_FOUND,
-                                   "This key cannot be found in store.")
+        """
+        seek to a position in the iterator
+        :param key: the key in the position
+        :return: None
+        """
+        pass
 
+    @abstractmethod
     def seek_to_first(self) -> None:
-        self.cur = None
-        self.start = True
+        """
+        seek to the beginning of iterator
+        :return: the beginning of iterator
+        """
+        pass
 
+    @abstractmethod
     def valid(self) -> bool:
-        if self.cur is None and self.start:
-            return True
-        elif self.database.find_next(self.cur):
-            return True
-        return False
+        """
+        check whether there is a valid next element
+        :return: True if there is a valid next element, otherwise False
+        """
+        pass
 
+    @abstractmethod
     def next(self) -> None:
-        if self.cur is None and self.start:
-            self.cur = self.database.find_min()
-        else:
-            self.cur = self.database.find_next(self.cur)
-        self.start = False
+        """
+        iterator points to next element
+        :return: None
+        """
+        pass
 
+    @abstractmethod
     def value(self) -> str:
-        if self.cur:
-            return self.cur.value
-        else:
-            raise StorageException(ErrorType.NONE_POINTER,
-                                   "This object is None and "
-                                   "it has no attribute value.")
+        """
+        return the value of element iterator points to
+        :return: the value of element iterator points to
+        """
+        pass
 
+    @abstractmethod
     def key(self) -> str:
-        if self.cur:
-            return self.cur.key
-        else:
-            raise StorageException(ErrorType.NONE_POINTER,
-                                   "This object is None and "
-                                   "it has no attribute key.")
+        """
+        return the key of element iterator points to
+        :return: the key of element iterator points to
+        """
+        pass

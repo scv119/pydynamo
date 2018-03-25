@@ -1,8 +1,8 @@
-from .iterator import Iterator
 from .binarysearchtree import BinarySearchTree
-from .store import Store
-from .error import StorageException
-from .error import ErrorType
+from ..store import Store
+from ..error import StorageException
+from ..error import ErrorType
+from .inmemoryiterator import InMemoryIterator
 
 
 class InMemoryStore(Store):
@@ -22,8 +22,8 @@ class InMemoryStore(Store):
                                    "This key cannot be found in store.")
         return self.database.get(key)
 
-    def iterator(self) -> Iterator:
-        return Iterator(self.database)
+    def iterator(self) -> InMemoryIterator:
+        return InMemoryIterator(self.database)
 
     def remove(self, key: str) -> None:
         if not self.database.contain(key):

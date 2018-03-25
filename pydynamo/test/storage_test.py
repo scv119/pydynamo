@@ -1,30 +1,30 @@
 import unittest
-from pydynamo.storage.inmemorystore import InMemoryStore
+from pydynamo.storage.memory.inmemorystore import InMemoryStore
 from pydynamo.storage.error import StorageException
 
 test_cases = [["2", "abandon"], ["1", "definition"], ["3", "support"]]
 
 
 class StoreTest(unittest.TestCase):
+    def setUp(self):
+        self.store = self._generate_store(test_cases)
+
     def test_smoke(self) -> None:
-        store = InMemoryStore("test")
-        self.assertTrue(isinstance(store, InMemoryStore))
+        inmemorystore = InMemoryStore("test")
+        self.assertTrue(isinstance(inmemorystore, InMemoryStore))
 
     def test_add_get_method(self) -> None:
-        store = self._generate_store(test_cases)
-        self.assertEqual(store.get("2"), "abandon")
-        self.assertEqual(store.get("1"), "definition")
-        self.assertEqual(store.get("3"), "support")
+        self.assertEqual(self.store.get("2"), "abandon")
+        self.assertEqual(self.store.get("1"), "definition")
+        self.assertEqual(self.store.get("3"), "support")
 
     def test_update(self) -> None:
-        store = self._generate_store(test_cases)
-        store.set("1", "update")
-        self.assertEqual(store.get("1"), "update")
+        self.store.set("1", "update")
+        self.assertEqual(self.store.get("1"), "update")
 
     def test_get(self) -> None:
-        store = self._generate_store(test_cases)
         with self.assertRaises(StorageException):
-            store.get("4")
+            self.store.get("4")
 
     def _generate_store(self, list)-> InMemoryStore:
         store = InMemoryStore("test")
@@ -33,8 +33,7 @@ class StoreTest(unittest.TestCase):
         return store
 
     def test_iterator_next(self):
-        store = self._generate_store(test_cases)
-        iterator = store.iterator()
+        iterator = self.store.iterator()
         iterator.next()
         self.assertEqual(iterator.value(), "definition")
         self.assertEqual(iterator.key(), "1")
@@ -46,8 +45,7 @@ class StoreTest(unittest.TestCase):
         self.assertEqual(iterator.key(), "3")
 
     def test_iterator_valid(self):
-        store = self._generate_store(test_cases)
-        iterator = store.iterator()
+        iterator = self.store.iterator()
         self.assertEqual(iterator.valid(), True)
         iterator.next()
         self.assertEqual(iterator.valid(), True)
@@ -57,8 +55,7 @@ class StoreTest(unittest.TestCase):
         self.assertEqual(iterator.valid(), False)
 
     def test_iterator_seek_to_first(self):
-        store = self._generate_store(test_cases)
-        iterator = store.iterator()
+        iterator = self.store.iterator()
         iterator.next()
         self.assertEqual(iterator.value(), "definition")
         self.assertEqual(iterator.key(), "1")
@@ -72,18 +69,16 @@ class StoreTest(unittest.TestCase):
         self.assertEqual(iterator.key(), "1")
 
     def test_iterator_seek(self):
-        store = self._generate_store(test_cases)
-        iterator = store.iterator()
+        iterator = self.store.iterator()
         iterator.seek("1")
         self.assertEqual(iterator.value(), "definition")
         with self.assertRaises(StorageException):
             iterator.seek("4")
 
     def test_remove(self):
-        store = self._generate_store(test_cases)
-        store.remove("2")
-        self.assertRaises(StorageException, store.get, "2")
-        iterator = store.iterator()
+        self.store.remove("2")
+        self.assertRaises(StorageException, self.store.get, "2")
+        iterator = self.store.iterator()
         iterator.next()
         self.assertEqual(iterator.value(), "definition")
         self.assertEqual(iterator.key(), "1")

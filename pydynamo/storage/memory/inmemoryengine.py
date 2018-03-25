@@ -1,7 +1,7 @@
-from .engine import StorageEngine
+from ..engine import StorageEngine
 from .inmemorystore import InMemoryStore
-from .error import StorageException
-from .error import ErrorType
+from ..error import StorageException
+from ..error import ErrorType
 
 
 class InMemoryStorageEngine(StorageEngine):
@@ -9,8 +9,12 @@ class InMemoryStorageEngine(StorageEngine):
         self.stores = {}
 
     def create_store(self, store_name: str) -> InMemoryStore:
-        self.stores[store_name] = InMemoryStore(store_name)
-        return self.stores[store_name]
+        if store_name in self.stores:
+            raise StorageException(ErrorType.INVALID_INPUT,
+                                   "This store name has been used.")
+        else:
+            self.stores[store_name] = InMemoryStore(store_name)
+            return self.stores[store_name]
 
     def get_store(self, store_name: str) -> InMemoryStore:
         if store_name in self.stores:

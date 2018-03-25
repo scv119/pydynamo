@@ -1,6 +1,6 @@
 import unittest
-from pydynamo.storage.inmemorystore import InMemoryStore
-from pydynamo.storage.inmemoryengine import InMemoryStorageEngine
+from pydynamo.storage.memory.inmemorystore import InMemoryStore
+from pydynamo.storage.memory.inmemoryengine import InMemoryStorageEngine
 from pydynamo.storage.error import StorageException
 
 
@@ -10,8 +10,11 @@ class InMemoryStorageEngineTest(unittest.TestCase):
         self.assertTrue(isinstance(engine, InMemoryStorageEngine))
 
     def test_create_store(self):
-        new_store = InMemoryStorageEngine().create_store("test")
+        engine = InMemoryStorageEngine()
+        new_store = engine.create_store("test")
         self.assertTrue(isinstance(new_store, InMemoryStore))
+        with self.assertRaises(StorageException):
+            engine.create_store("test")
 
     def test_get_store(self):
         engine = InMemoryStorageEngine()
