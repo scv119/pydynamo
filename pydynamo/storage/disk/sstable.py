@@ -26,26 +26,26 @@ class SSTable(Store):
         self.index_table = index_table
         self.path = path
         self.last_index = last_index
-        self.diskIterator = self.iterator()
+        self.disk_iterator = self.iterator()
 
     def get(self, key: str) -> str:
         """
         :param key: the key user intends to find in sstable
         :return: the value corresponding to key
         """
-        self.diskIterator.seek(key)
-        return self.diskIterator.value()
+        self.disk_iterator.seek(key)
+        return self.disk_iterator.value()
 
     def get_timestamp(self, key: str) -> str:
         """
         :param key: the key user intends to find in sstable
         :return: the created time of this key-value set data
         """
-        self.diskIterator.seek(key)
-        return self.diskIterator.timestamp()
+        self.disk_iterator.seek(key)
+        return self.disk_iterator.timestamp()
 
     def set(self, key: str, value: str):
-        raise StorageException(ErrorType.NOT_FOUND,
+        raise StorageException(ErrorType.ACTION_FORBIDDEN,
                                "SSTable cannot be modified.")
 
     def iterator(self):
@@ -57,5 +57,5 @@ class SSTable(Store):
                                self.path, self.last_index)
 
     def remove(self, key: str) -> None:
-        raise StorageException(ErrorType.NOT_FOUND,
+        raise StorageException(ErrorType.ACTION_FORBIDDEN,
                                "SSTable cannot be modified.")

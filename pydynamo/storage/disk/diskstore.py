@@ -1,7 +1,7 @@
 from ..memory.inmemorystore import InMemoryStore
 from ..error import StorageException
 from ..error import ErrorType
-from datetime import datetime
+from time import time
 from .sstable import SSTable
 from struct import pack
 from typing import Any
@@ -12,6 +12,7 @@ import os
 
 class DiskStore(Store):
     INT_SIZE = 4
+    TIMESTAMP_SIZE = 8
 
     def __init__(self, store_name: str, path: str) -> None:
         """
@@ -79,7 +80,7 @@ class DiskStore(Store):
         """
         flush memory table into disk
         index_table: in memory
-        data : tuple (key, offset for the key)
+        data : tuple (key, offset in index_file for the key)
         sstable_file: in disk
         data: key_size(4 byte) + key + value_size(4 byte) +
         value + time_size(4 byte) + current time
@@ -96,41 +97,43 @@ class DiskStore(Store):
         offset = 0
         key_index = 0
         key_size = 0
+        val_size = 0
         interval = self._index_interval(self.mem_table.get_size())
+        index_offset = 0
         while iterator.valid():
             iterator.next()
             key = iterator.key()
             value = iterator.value()
             if key_index % interval == 0:
-                self.index_table.append((key, pack("i", offset)))
+                self.index_table.append((key, pack("i", index_offset)))
             key_size = len(key.encode())
-            val_size = len(value)
+            val_size = len(value.encode())
             bin_key_size = pack("i", key_size)
             bin_val_size = pack("i", val_size)
             bin_offset = pack("i", offset)
-            self.last_index += self.INT_SIZE + key_size + self.INT_SIZE
             index_file.write(bin_key_size)
             index_file.write(key.encode())
             index_file.write(bin_offset)
+            index_offset += self.INT_SIZE + key_size + self.INT_SIZE
             sstable_file.write(bin_key_size)
             sstable_file.write(key.encode())
             sstable_file.write(bin_val_size)
             sstable_file.write(value.encode())
-            timestamp = str(datetime.utcnow()).encode()
-            timestamp_size = len(timestamp)
-            bin_timestamp_size = pack("i", timestamp_size)
-            sstable_file.write(bin_timestamp_size)
-            sstable_file.write(timestamp)
+            timestamp = int(time() * 1000000)
+            bin_timestamp = pack("q", timestamp)
+            sstable_file.write(bin_timestamp)
             offset += self.INT_SIZE + key_size + \
-                self.INT_SIZE + val_size + self.INT_SIZE + timestamp_size
+                self.INT_SIZE + val_size + self.TIMESTAMP_SIZE
             key_index += 1
-        self.last_index = self.last_index - self.INT_SIZE \
-            - key_size - self.INT_SIZE
+        self.last_index = index_offset - self.INT_SIZE -\
+            key_size - self.INT_SIZE
         index_file.close()
         sstable_file.close()
         return offset
 
     def _index_interval(self, size) -> int:
+        if size == 0:
+            return 0
         index_counter = size * self.index_ratio
         interval = size / index_counter
         return interval

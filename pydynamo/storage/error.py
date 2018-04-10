@@ -5,6 +5,7 @@ class ErrorType(Enum):
     NOT_FOUND = 0
     INVALID_INPUT = 1
     NONE_POINTER = 2
+    ACTION_FORBIDDEN = 3
 
 
 class StorageException(Exception):
