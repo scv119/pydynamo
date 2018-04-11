@@ -1,4 +1,5 @@
 from .treenode import TreeNode
+from ..error import StorageException, ErrorType
 
 
 class BinarySearchTree(object):
@@ -73,6 +74,9 @@ class BinarySearchTree(object):
     def remove_node(self, key: str) -> None:
         if self.contain(key):
             self.root = self._remove_node_at(key, self.root)
+        else:
+            raise StorageException(ErrorType.NOT_FOUND,
+                                   "This key is not in table.")
 
     def _remove_node_at(self, key: str, root: TreeNode) -> TreeNode:
         if root.key == key:
@@ -84,13 +88,15 @@ class BinarySearchTree(object):
                 root.key = leftmost_node.key
                 root.value = leftmost_node.value
                 root.right = self._remove_left_most_child(root.right)
-        elif root.key < root.key:
+        elif key < root.key:
             root.left = self._remove_node_at(key, root.left)
-        else:
+        elif key > root.key:
             root.right = self._remove_node_at(key, root.right)
         return root
 
     def _get_leftmost_node(self, cur: TreeNode) -> TreeNode:
+        if cur is None:
+            return None
         while cur.left:
             cur = cur.left
         return cur

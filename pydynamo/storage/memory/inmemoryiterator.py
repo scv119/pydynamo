@@ -25,7 +25,9 @@ class InMemoryIterator(Iterator):
         self.start = True
 
     def valid(self) -> bool:
-        if self.cur is None and self.start:
+        if self.database.find_min() is None:
+            return False
+        elif self.cur is None and self.start:
             return True
         elif self.database.find_next(self.cur):
             return True

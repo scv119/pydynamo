@@ -77,7 +77,8 @@ class StoreTest(unittest.TestCase):
 
     def test_remove(self):
         self.store.remove("2")
-        self.assertRaises(StorageException, self.store.get, "2")
+        with self.assertRaises(StorageException):
+            self.store.get("2")
         iterator = self.store.iterator()
         iterator.next()
         self.assertEqual(iterator.value(), "definition")
@@ -85,3 +86,8 @@ class StoreTest(unittest.TestCase):
         iterator.next()
         self.assertEqual(iterator.value(), "support")
         self.assertEqual(iterator.key(), "3")
+
+    def test_clean(self):
+        self.store.clean()
+        iterator = self.store.iterator()
+        self.assertEqual(iterator.valid(), False)
