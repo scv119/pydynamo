@@ -12,11 +12,21 @@ class InMemoryStore(Store):
         self.size = 0
 
     def set(self, key: str, value: str) -> None:
+        """
+        :param key: the key to be set
+        :param value: the value to be inserted or update
+        update size: 16 is the total size for key_size, val_size, timestamp
+        updating size to track the size of sstable file
+        if flush the memory table into ss table
+        :return:
+        """
         if self.database.contain(key):
+            prev_value = self.database.get(key)
             self.database.update(key, value)
+            self.size -= len(prev_value) + len(value)
         else:
             self.database.insert(key, value)
-            self.size += 1
+            self.size += 16 + len(key) + len(value)
 
     def contain_key(self, key: str) -> bool:
         return self.database.contain(key)
@@ -39,6 +49,7 @@ class InMemoryStore(Store):
 
     def clean(self) -> None:
         self.database = BinarySearchTree()
+        self.size = 0
 
     def get_size(self) -> int:
         return self.size

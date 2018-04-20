@@ -21,7 +21,7 @@ class SStableIterator(Iterator):
         :param last_index: the offset of last
         key-data-time set data in sstable file
         """
-        sstable_file_name = store_name + str(id) + ".db"
+        sstable_file_name = store_name + str(id) + ".ss"
         index_file_name = store_name + str(id) + ".index"
         self.cur = None
         sstable_dir = os.path.join(path, "sstable")
@@ -150,7 +150,7 @@ class SStableIterator(Iterator):
         key = self.sstable_file.read(key_size).decode()
         return key
 
-    def timestamp(self) -> str:
+    def timestamp(self) -> int:
         """
         :return: the time of the key-value-time
         set data the iterator points to
@@ -187,6 +187,13 @@ class SStableIterator(Iterator):
         :return: the offset of data the iterator currently points to
         """
         return self.cur_offset
+
+    def contain(self, key: str) -> bool:
+        offset_range = self._get_range(key)
+        offset = self._get_offset(key, offset_range[0], offset_range[1])
+        if offset is None:
+            return False
+        return True
 
     def _get_range(self, key: str) -> Tuple[int, int]:
         """
