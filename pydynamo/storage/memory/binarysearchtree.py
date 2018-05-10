@@ -45,6 +45,20 @@ class BinarySearchTree(object):
                 cur = cur.left
         return None
 
+    def contain_not_removed(self, key: str) -> bool:
+        cur = self.root
+        while cur:
+            if cur.key == key:
+                if not cur.remove:
+                    return True
+                else:
+                    return False
+            elif cur.key < key:
+                cur = cur.right
+            else:
+                cur = cur.left
+        return False
+
     def get_node(self, key: str) -> TreeNode:
         cur = self.root
         while cur:
@@ -61,11 +75,22 @@ class BinarySearchTree(object):
         while cur:
             if cur.key == key:
                 cur.value = value
+                if cur.remove:
+                    cur.remove = False
                 return
             elif cur.key < key:
                 cur = cur.right
             else:
                 cur = cur.left
+
+    def remove(self, key: str) -> None:
+        if self.contain(key):
+            node = self.get_node(key)
+            node.remove = True
+        else:
+            self.insert(key, None)
+            node = self.get_node(key)
+            node.remove = True
 
     def balance_tree(self) -> None:
         # TODO
@@ -95,11 +120,13 @@ class BinarySearchTree(object):
         return root
 
     def _get_leftmost_node(self, cur: TreeNode) -> TreeNode:
+        leftmost = cur
         if cur is None:
             return None
-        while cur.left:
+        while cur.left is not None:
             cur = cur.left
-        return cur
+            leftmost = cur
+        return leftmost
 
     def _remove_left_most_child(self, cur: TreeNode) -> TreeNode:
         right_child = cur.right

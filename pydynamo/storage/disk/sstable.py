@@ -2,7 +2,9 @@ from ..store import Store
 from ..error import StorageException
 from ..error import ErrorType
 from .sstableiterator import SStableIterator
+from .diskiterator import DiskIterator
 from typing import List
+import os
 
 
 class SSTable(Store):
@@ -56,6 +58,23 @@ class SSTable(Store):
                                self.id, self.size, self.index_table,
                                self.path, self.last_index)
 
+    def diskiterator(self):
+        return DiskIterator(self.store_name, self.id,
+                            self.size, self.index_table,
+                            self.path, self.last_index)
+
     def remove(self, key: str) -> None:
         raise StorageException(ErrorType.ACTION_FORBIDDEN,
                                "SSTable cannot be modified.")
+
+    def clean(self) -> None:
+        ss_table_dir = os.path.join(self.path, "sstable")
+        index_dir = os.path.join(self.path, "index")
+        ss_table_file_name = self.store_name + str(self.id) + ".ss"
+        index_file_name = self.store_name + str(self.id) + ".index"
+        sstable_path = os.path.join(ss_table_dir, ss_table_file_name)
+        index_path = os.path.join(index_dir, index_file_name)
+        if os.path.exists(sstable_path):
+            os.remove(sstable_path)
+        if os.path.exists(index_path):
+            os.remove(index_path)

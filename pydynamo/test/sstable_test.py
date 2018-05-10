@@ -15,7 +15,7 @@ class SStableTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tempdirname:
             disk1 = DiskStore("test_empty", tempdirname, 2000000)
             disk1.flush()
-            self.sstable1 = disk1.ss_tables["test_empty0"]
+            self.sstable1 = disk1.ss_tables[0]
             disk = DiskStore("test", tempdirname, 2000000)
             disk.mem_table.set("mengying", "computerscience")
             disk.mem_table.set("kelly", "kpmg")
@@ -25,7 +25,7 @@ class SStableTest(unittest.TestCase):
                 disk.mem_table.set(str(i), "result" + str(i))
             self.in_memory_iterator = disk.mem_table.iterator()
             disk.flush()
-            self.sstable = disk.ss_tables["test0"]
+            self.sstable = disk.ss_tables[0]
             self.tempdir = tempdirname
 
     def test_smoke(self) -> None:

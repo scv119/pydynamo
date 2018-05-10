@@ -23,6 +23,123 @@ class DiskStoreTest(unittest.TestCase):
                 self.disk_200.set(str(i), "new" + str(i))
                 self.disk_20.set(str(i), "new" + str(i))
 
+    def test_iterator(self):
+        print("TEST iterator ")
+        with tempfile.TemporaryDirectory() as tempdirname:
+            disk = DiskStore("temp", tempdirname, 20)
+            for i in range(100):
+                disk.set(str(i), "result" + str(i))
+            for i in range(100):
+                self.assertEqual(disk.get(str(i)), "result" + str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    disk.remove(str(i))
+            for i in range(100):
+                if i % 4 == 0:
+                    disk.set(str(i), "new" + str(i))
+            iterator = disk.iterator()
+            j = 0
+            while iterator.valid():
+                iterator.next()
+                self.assertEqual(iterator.key(), str(j))
+                self.assertEqual(iterator.value(), "result" + str(j))
+                j += 1
+                if j % 4 == 0:
+                    continue
+                elif j % 2 == 0:
+                    j += 1
+        with tempfile.TemporaryDirectory() as tempdirname:
+            disk = DiskStore("temp", tempdirname, 200)
+            for i in range(100):
+                disk.set(str(i), "result" + str(i))
+            for i in range(100):
+                self.assertEqual(disk.get(str(i)), "result" + str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    disk.remove(str(i))
+            for i in range(100):
+                if i % 4 == 0:
+                    disk.set(str(i), "new" + str(i))
+            iterator = disk.iterator()
+            j = 0
+            while iterator.valid():
+                iterator.next()
+                self.assertEqual(iterator.key(), str(j))
+                self.assertEqual(iterator.value(), "result" + str(j))
+                j += 1
+                if j % 4 == 0:
+                    continue
+                elif j % 2 == 0:
+                    j += 1
+        with tempfile.TemporaryDirectory() as tempdirname:
+            disk = DiskStore("temp", tempdirname, 1000)
+            for i in range(100):
+                disk.set(str(i), "result" + str(i))
+            for i in range(100):
+                self.assertEqual(disk.get(str(i)), "result" + str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    disk.remove(str(i))
+            for i in range(100):
+                if i % 4 == 0:
+                    disk.set(str(i), "new" + str(i))
+            iterator = disk.iterator()
+            j = 0
+            while iterator.valid():
+                iterator.next()
+                self.assertEqual(iterator.key(), str(j))
+                self.assertEqual(iterator.value(), "result" + str(j))
+                j += 1
+                if j % 4 == 0:
+                    continue
+                elif j % 2 == 0:
+                    j += 1
+
+    def test_remove(self):
+        print("TEST remove ")
+        with tempfile.TemporaryDirectory() as tempdirname:
+            disk = DiskStore("temp", tempdirname, 1000)
+            for i in range(100):
+                disk.set(str(i), "result" + str(i))
+            for i in range(100):
+                self.assertEqual(disk.get(str(i)), "result" + str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    disk.remove(str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    self.assertEqual(disk.get(str(i)), None)
+                else:
+                    self.assertEqual(disk.get(str(i)), "result" + str(i))
+        with tempfile.TemporaryDirectory() as tempdirname:
+            disk = DiskStore("temp", tempdirname, 200)
+            for i in range(100):
+                disk.set(str(i), "result" + str(i))
+            for i in range(100):
+                self.assertEqual(disk.get(str(i)), "result" + str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    disk.remove(str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    self.assertEqual(disk.get(str(i)), None)
+                else:
+                    self.assertEqual(disk.get(str(i)), "result" + str(i))
+        with tempfile.TemporaryDirectory() as tempdirname:
+            disk = DiskStore("temp", tempdirname, 20)
+            for i in range(100):
+                disk.set(str(i), "result" + str(i))
+            for i in range(100):
+                self.assertEqual(disk.get(str(i)), "result" + str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    disk.remove(str(i))
+            for i in range(100):
+                if i % 2 == 0:
+                    self.assertEqual(disk.get(str(i)), None)
+                else:
+                    self.assertEqual(disk.get(str(i)), "result" + str(i))
+
     def test_get(self):
         for i in range(50):
             self.assertEqual(self.disk_2000.get(str(i)), "new" + str(i))
