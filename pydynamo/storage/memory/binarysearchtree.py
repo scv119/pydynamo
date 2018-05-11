@@ -1,5 +1,6 @@
 from .treenode import TreeNode
 from ..error import StorageException, ErrorType
+from typing import Union
 
 
 class BinarySearchTree(object):
@@ -10,7 +11,7 @@ class BinarySearchTree(object):
     def length(self):
         return self.size
 
-    def insert(self, key: str, value: str) -> None:
+    def insert(self, key: str, value: Union[str, None]) -> None:
         self.root = self._insert_at(key, value, self.root)
         self.size += 1
 
@@ -34,7 +35,7 @@ class BinarySearchTree(object):
                 cur = cur.left
         return False
 
-    def get(self, key: str) -> str:
+    def get(self, key: str) -> Union[str, None]:
         cur = self.root
         while cur:
             if cur.key == key:
@@ -59,7 +60,7 @@ class BinarySearchTree(object):
                 cur = cur.left
         return False
 
-    def get_node(self, key: str) -> TreeNode:
+    def get_node(self, key: str) -> Union[TreeNode, None]:
         cur = self.root
         while cur:
             if cur.key == key:
@@ -119,7 +120,7 @@ class BinarySearchTree(object):
             root.right = self._remove_node_at(key, root.right)
         return root
 
-    def _get_leftmost_node(self, cur: TreeNode) -> TreeNode:
+    def _get_leftmost_node(self, cur: TreeNode) -> Union[TreeNode, None]:
         leftmost = cur
         if cur is None:
             return None
@@ -139,7 +140,7 @@ class BinarySearchTree(object):
     def find_next(self, cur) -> TreeNode:
         return self._find_next(cur, self.root)
 
-    def _find_next(self, cur_node, cur_root) -> TreeNode:
+    def _find_next(self, cur_node, cur_root) -> Union[TreeNode, None]:
         if not cur_root or not cur_node:
             return None
         if cur_node.key >= cur_root.key:

@@ -57,6 +57,6 @@ class InMemoryIterator(Iterator):
                                    "it has no attribute key.")
 
     def is_removed(self) -> bool:
-        if self.cur.remove:
+        if self.cur and self.cur.remove:
             return True
         return False
