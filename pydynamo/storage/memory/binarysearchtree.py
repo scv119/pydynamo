@@ -15,7 +15,8 @@ class BinarySearchTree(object):
         self.root = self._insert_at(key, value, self.root)
         self.size += 1
 
-    def _insert_at(self, key: str, value: Union[str, None], cur_node: TreeNode) -> TreeNode:
+    def _insert_at(self, key: str, value: Union[str, None],
+                   cur_node: TreeNode) -> TreeNode:
         if not cur_node:
             return TreeNode(key, value)
         elif key < cur_node.key:
