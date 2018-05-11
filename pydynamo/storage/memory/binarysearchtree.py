@@ -15,7 +15,7 @@ class BinarySearchTree(object):
         self.root = self._insert_at(key, value, self.root)
         self.size += 1
 
-    def _insert_at(self, key: str, value: str, cur_node: TreeNode) -> TreeNode:
+    def _insert_at(self, key: str, value: Union[str, None], cur_node: TreeNode) -> TreeNode:
         if not cur_node:
             return TreeNode(key, value)
         elif key < cur_node.key:
@@ -87,11 +87,13 @@ class BinarySearchTree(object):
     def remove(self, key: str) -> None:
         if self.contain(key):
             node = self.get_node(key)
-            node.remove = True
+            if node:
+                node.remove = True
         else:
             self.insert(key, None)
             node = self.get_node(key)
-            node.remove = True
+            if node:
+                node.remove = True
 
     def balance_tree(self) -> None:
         # TODO
@@ -111,9 +113,10 @@ class BinarySearchTree(object):
                 return root.left
             else:
                 leftmost_node = self._get_leftmost_node(root.right)
-                root.key = leftmost_node.key
-                root.value = leftmost_node.value
-                root.right = self._remove_left_most_child(root.right)
+                if leftmost_node:
+                    root.key = leftmost_node.key
+                    root.value = leftmost_node.value
+                    root.right = self._remove_left_most_child(root.right)
         elif key < root.key:
             root.left = self._remove_node_at(key, root.left)
         elif key > root.key:
@@ -137,7 +140,7 @@ class BinarySearchTree(object):
             cur.left = self._remove_left_most_child(cur.left)
         return cur
 
-    def find_next(self, cur) -> TreeNode:
+    def find_next(self, cur) -> Union[TreeNode, None]:
         return self._find_next(cur, self.root)
 
     def _find_next(self, cur_node, cur_root) -> Union[TreeNode, None]:
@@ -152,5 +155,5 @@ class BinarySearchTree(object):
             else:
                 return cur_root
 
-    def find_min(self) -> TreeNode:
+    def find_min(self) -> Union[TreeNode, None]:
         return self._get_leftmost_node(self.root)
