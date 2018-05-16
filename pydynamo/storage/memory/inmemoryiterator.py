@@ -55,3 +55,8 @@ class InMemoryIterator(Iterator):
             raise StorageException(ErrorType.NONE_POINTER,
                                    "This object is None and "
                                    "it has no attribute key.")
+
+    def is_removed(self) -> bool:
+        if self.cur and self.cur.remove:
+            return True
+        return False

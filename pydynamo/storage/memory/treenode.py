@@ -4,3 +4,4 @@ class TreeNode(object):
         self.value = value
         self.left = None
         self.right = None
+        self.remove = False

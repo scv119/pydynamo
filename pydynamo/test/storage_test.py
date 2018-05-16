@@ -83,9 +83,15 @@ class StoreTest(unittest.TestCase):
         iterator.next()
         self.assertEqual(iterator.value(), "definition")
         self.assertEqual(iterator.key(), "1")
+        self.assertTrue(not iterator.is_removed())
+        iterator.next()
+        self.assertEqual(iterator.value(), "abandon")
+        self.assertEqual(iterator.key(), "2")
+        self.assertTrue(iterator.is_removed())
         iterator.next()
         self.assertEqual(iterator.value(), "support")
         self.assertEqual(iterator.key(), "3")
+        self.assertTrue(not iterator.is_removed())
 
     def test_clean(self):
         self.store.clean()

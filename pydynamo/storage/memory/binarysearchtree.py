@@ -1,5 +1,6 @@
 from .treenode import TreeNode
 from ..error import StorageException, ErrorType
+from typing import Union
 
 
 class BinarySearchTree(object):
@@ -10,11 +11,12 @@ class BinarySearchTree(object):
     def length(self):
         return self.size
 
-    def insert(self, key: str, value: str) -> None:
+    def insert(self, key: str, value: Union[str, None]) -> None:
         self.root = self._insert_at(key, value, self.root)
         self.size += 1
 
-    def _insert_at(self, key: str, value: str, cur_node: TreeNode) -> TreeNode:
+    def _insert_at(self, key: str, value: Union[str, None],
+                   cur_node: TreeNode) -> TreeNode:
         if not cur_node:
             return TreeNode(key, value)
         elif key < cur_node.key:
@@ -34,7 +36,7 @@ class BinarySearchTree(object):
                 cur = cur.left
         return False
 
-    def get(self, key: str) -> str:
+    def get(self, key: str) -> Union[str, None]:
         cur = self.root
         while cur:
             if cur.key == key:
@@ -45,7 +47,21 @@ class BinarySearchTree(object):
                 cur = cur.left
         return None
 
-    def get_node(self, key: str) -> TreeNode:
+    def contain_not_removed(self, key: str) -> bool:
+        cur = self.root
+        while cur:
+            if cur.key == key:
+                if not cur.remove:
+                    return True
+                else:
+                    return False
+            elif cur.key < key:
+                cur = cur.right
+            else:
+                cur = cur.left
+        return False
+
+    def get_node(self, key: str) -> Union[TreeNode, None]:
         cur = self.root
         while cur:
             if cur.key == key:
@@ -61,11 +77,24 @@ class BinarySearchTree(object):
         while cur:
             if cur.key == key:
                 cur.value = value
+                if cur.remove:
+                    cur.remove = False
                 return
             elif cur.key < key:
                 cur = cur.right
             else:
                 cur = cur.left
+
+    def remove(self, key: str) -> None:
+        if self.contain(key):
+            node = self.get_node(key)
+            if node:
+                node.remove = True
+        else:
+            self.insert(key, None)
+            node = self.get_node(key)
+            if node:
+                node.remove = True
 
     def balance_tree(self) -> None:
         # TODO
@@ -85,21 +114,24 @@ class BinarySearchTree(object):
                 return root.left
             else:
                 leftmost_node = self._get_leftmost_node(root.right)
-                root.key = leftmost_node.key
-                root.value = leftmost_node.value
-                root.right = self._remove_left_most_child(root.right)
+                if leftmost_node:
+                    root.key = leftmost_node.key
+                    root.value = leftmost_node.value
+                    root.right = self._remove_left_most_child(root.right)
         elif key < root.key:
             root.left = self._remove_node_at(key, root.left)
         elif key > root.key:
             root.right = self._remove_node_at(key, root.right)
         return root
 
-    def _get_leftmost_node(self, cur: TreeNode) -> TreeNode:
+    def _get_leftmost_node(self, cur: TreeNode) -> Union[TreeNode, None]:
+        leftmost = cur
         if cur is None:
             return None
-        while cur.left:
+        while cur.left is not None:
             cur = cur.left
-        return cur
+            leftmost = cur
+        return leftmost
 
     def _remove_left_most_child(self, cur: TreeNode) -> TreeNode:
         right_child = cur.right
@@ -109,10 +141,10 @@ class BinarySearchTree(object):
             cur.left = self._remove_left_most_child(cur.left)
         return cur
 
-    def find_next(self, cur) -> TreeNode:
+    def find_next(self, cur) -> Union[TreeNode, None]:
         return self._find_next(cur, self.root)
 
-    def _find_next(self, cur_node, cur_root) -> TreeNode:
+    def _find_next(self, cur_node, cur_root) -> Union[TreeNode, None]:
         if not cur_root or not cur_node:
             return None
         if cur_node.key >= cur_root.key:
@@ -124,5 +156,5 @@ class BinarySearchTree(object):
             else:
                 return cur_root
 
-    def find_min(self) -> TreeNode:
+    def find_min(self) -> Union[TreeNode, None]:
         return self._get_leftmost_node(self.root)

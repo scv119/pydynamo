@@ -6,7 +6,7 @@ import os
 from typing import Tuple
 
 
-class SStableIterator(Iterator):
+class DiskIterator(Iterator):
     INT_SIZE = 4
     TIMESTAMP_SIZE = 8
     INDICATOR_SIZE = 4
@@ -90,24 +90,28 @@ class SStableIterator(Iterator):
             self.sstable_file.seek(self.cur_offset)
             indicator = unpack("i", self.sstable_file.
                                read(self.INDICATOR_SIZE))[0]
-            if indicator == 0:
+            offset = self.cur_offset
+            while indicator == 0:
                 key_size_str = self.sstable_file.read(self.INT_SIZE)
                 key_size = unpack("i", key_size_str)[0]
                 self.sstable_file.read(key_size)
                 self.sstable_file.read(self.TIMESTAMP_SIZE)
-                offset = self.cur_offset + self.INDICATOR_SIZE \
-                    + self.INT_SIZE \
+                offset = offset + self.INDICATOR_SIZE + self.INT_SIZE \
                     + key_size + self.TIMESTAMP_SIZE
-            else:
-                key_size_str = self.sstable_file.read(self.INT_SIZE)
-                key_size = unpack("i", key_size_str)[0]
-                self.sstable_file.read(key_size)
-                val_size_str = self.sstable_file.read(self.INT_SIZE)
-                val_size = unpack("i", val_size_str)[0]
-                self.sstable_file.read(val_size)
-                offset = self.cur_offset + \
-                    self.INDICATOR_SIZE + self.INT_SIZE \
-                    + key_size + self.INT_SIZE + val_size + self.TIMESTAMP_SIZE
+                if offset >= self.file_size:
+                    return False
+                indicator = unpack("i",
+                                   self.sstable_file.read
+                                   (self.INDICATOR_SIZE))[0]
+            key_size_str = self.sstable_file.read(self.INT_SIZE)
+            key_size = unpack("i", key_size_str)[0]
+            self.sstable_file.read(key_size)
+            val_size_str = self.sstable_file.read(self.INT_SIZE)
+            val_size = unpack("i", val_size_str)[0]
+            self.sstable_file.read(val_size)
+            offset = offset + self.INDICATOR_SIZE + self.INT_SIZE \
+                + key_size + self.INT_SIZE + val_size \
+                + self.TIMESTAMP_SIZE
             if offset >= self.file_size:
                 return False
             return True
@@ -128,24 +132,29 @@ class SStableIterator(Iterator):
             self.sstable_file.seek(self.cur_offset)
             indicator = unpack("i", self.sstable_file.
                                read(self.INDICATOR_SIZE))[0]
-            if indicator == 0:
+            while indicator == 0:
                 key_size_str = self.sstable_file.read(self.INT_SIZE)
                 key_size = unpack("i", key_size_str)[0]
                 self.sstable_file.read(key_size)
                 self.sstable_file.read(self.TIMESTAMP_SIZE)
                 self.cur_offset = self.cur_offset + \
-                    self.INDICATOR_SIZE + self.INT_SIZE + key_size \
+                    self.INDICATOR_SIZE + \
+                    self.INT_SIZE + key_size \
                     + self.TIMESTAMP_SIZE
-            else:
-                key_size_str = self.sstable_file.read(self.INT_SIZE)
-                key_size = unpack("i", key_size_str)[0]
-                self.sstable_file.read(key_size)
-                val_size_str = self.sstable_file.read(self.INT_SIZE)
-                val_size = unpack("i", val_size_str)[0]
-                self.sstable_file.read(val_size)
-                self.cur_offset = self.cur_offset + \
-                    self.INDICATOR_SIZE + self.INT_SIZE + key_size \
-                    + self.INT_SIZE + val_size + self.TIMESTAMP_SIZE
+                if self.cur_offset >= self.file_size:
+                    raise StorageException(ErrorType.NONE_POINTER,
+                                           "There is no next")
+                indicator = unpack("i", self.sstable_file.
+                                   read(self.INDICATOR_SIZE))[0]
+            key_size_str = self.sstable_file.read(self.INT_SIZE)
+            key_size = unpack("i", key_size_str)[0]
+            self.sstable_file.read(key_size)
+            val_size_str = self.sstable_file.read(self.INT_SIZE)
+            val_size = unpack("i", val_size_str)[0]
+            self.sstable_file.read(val_size)
+            self.cur_offset = self.cur_offset + self.INDICATOR_SIZE \
+                + self.INT_SIZE + key_size \
+                + self.INT_SIZE + val_size + self.TIMESTAMP_SIZE
             if self.cur_offset >= self.file_size:
                 raise StorageException(ErrorType.NONE_POINTER,
                                        "There is no next")
